@@ -1,3 +1,8 @@
+--[[#!
+	#io
+	#os
+]]--#
+
 g_ScriptTitle = "Guessing Game"
 g_ScriptInfo = "Guess my numb0r, dude. | by the AllTheHaxx-Team"
 
@@ -13,7 +18,7 @@ function OnScriptInit()
 end
 
 
-function Reset() 
+function Reset()
 	math.randomseed( os.time() )
 	MaxNum = nil
 	League = nil
@@ -22,17 +27,17 @@ function Reset()
 	LastGuess = 0
 
 	NumTries = 0
-	
+
 	TriedNums = nil
 	TriedNums = {}
-	
+
 	Highscores = nil
 	Highscores = {}
 end
 
 function SaveHighscores()
 	print("Saving Highscores")
-	file = io.open("lua/.GuessingGame_Highscores.config", "w+")
+	file = io.open("lua/.GuessingGame_Highscores.config.lua", "w+")
 	for i, table in next, Highscores do
 		for name, score in next, table do
 			file:write("if Highscores[" .. i .. "] == nil then Highscores[" .. i .. "] = {} end\n")
@@ -44,7 +49,7 @@ function SaveHighscores()
 end
 
 function LoadHighscores()
-	if not Import(g_ScriptUID, ".GuessingGame_Highscores.config") then
+	if not Import(".GuessingGame_Highscores.config") then
 		print("Could not load highscores.")
 	else
 		print("Highscores loaded.")
@@ -59,7 +64,7 @@ end
 function Guesser(ID, Team, Msg)
     if ID == -1 then return end
     if Game.Client.LocalTime < LastGuess + DELAY then return end
-    
+
     -- stats
     if Msg:find("!rank") then
    		msg = Msg:gsub("!rank ", "")
@@ -87,7 +92,7 @@ function Guesser(ID, Team, Msg)
     	print(chat)
     	return
     end
-    
+
     -- init the game
     if MaxNum == nil then
     	if Msg:find("!start") then
@@ -103,7 +108,7 @@ function Guesser(ID, Team, Msg)
 		    		print(MyNum.."!!!!!!!!!!!!!!!!!!!!!!!")
 		    		infostring = "→→ Guess my number! (1-"..MaxNum.."). Use: .guess <number>"
 		    		if(string.lower(Game.ServerInfo.GameMode) == "if|city") then
-		    			infostring = infostring .. "PLEASE USE TEAMCHAT"
+		    			infostring = infostring .. " PLEASE USE TEAMCHAT"
 		    		end
 		    		Game.Chat:Say(0,  infostring)
 		    		LastGuess = Game.Client.LocalTime
@@ -117,10 +122,10 @@ function Guesser(ID, Team, Msg)
         end
     	return
     end
-    
-	
-    if Msg:find(".guess") then
-    
+
+
+    if Msg:find(".guess") or tonumber(Msg) ~= nil then
+
     	-- initialize the table
     	if(Highscores[League] == nil) then
     		Highscores[League] = {}
@@ -128,14 +133,14 @@ function Guesser(ID, Team, Msg)
 		if(Highscores[League][Game.Players(ID).Name] == nil) then
 			Highscores[League][Game.Players(ID).Name] = 0
 		end
-	
+
         msg = Msg:gsub(".guess ", "")
         num = tonumber(msg)
-        
+
         if (num < 1 or num > MaxNum) then return end
-        
+
         NumTries = NumTries + 1
-       
+
         if MyNum == num then
 	        winner = Game.Players(ID).Name
 	        winniwie = "as best as his highscore"
@@ -174,5 +179,5 @@ function Guesser(ID, Team, Msg)
         LastGuess = Game.Client.LocalTime
     end
 end
- 
+
 RegisterEvent("OnChat", "Guesser")
