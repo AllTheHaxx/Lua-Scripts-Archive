@@ -34,3 +34,22 @@ function _StringRTrim(str)
 	while n > 0 and str:find("^%s", n) do n = n - 1 end
 	return str:sub(1, n)
 end
+
+_toString = {
+
+	vec2 = function (v)
+        if type(v) ~= "userdata" then error("_toString.vec2 expects a vec2f (got " .. type(v) .. ")", 2) end
+		return "(" .. v.x .. "|" .. v.y .. ")"
+	end,
+
+	vec3 = function (v)
+        if type(v) ~= "userdata" then error("_toString.vec3 expects a vec3 f (got " .. type(v) .. ")", 2) end
+		return "(" .. v.x .. "|" .. v.y .. "|" .. v.z .. ")"
+	end,
+
+	vec4 = function (v)
+        if type(v) ~= "userdata" then error("_toString.vec4 expects a vec4f (got " .. type(v) .. ")", 2) end
+		return "(" .. v.r .. "|" .. v.g .. "|" .. v.b .."|" .. v.a .. ")"
+	end,
+
+}

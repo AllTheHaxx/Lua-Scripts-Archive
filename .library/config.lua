@@ -11,7 +11,7 @@ g_ScriptConfig = {}
 g_ScriptConfigFile = ScriptPath():sub(1, -5) .. ".conf.lua"
 
 function _ConfigSet(varname, value)
-	if varname == nil then return nil end
+	if varname == nil then return end
 	g_ScriptConfig[varname] = value
 end
 
@@ -40,7 +40,8 @@ function _ConfigSave() -- call this in OnScriptUnload()
 
 	for k, v in next, g_ScriptConfig do
 		if(type(k) == "string") then k = '"' .. k .. '"' end
-		if(type(v) == "string") then v = '"' .. v .. '"' end
+		if(type(v) == "string") then v = '"' .. v .. '"'
+        elseif type(v) == "number" then v = string.gsub(tostring(v), ",", ".") end
 		file:write("g_ScriptConfig[" .. k .. "] = " .. tostring(v) .. "\n")
 	end
 	file:flush()
@@ -51,7 +52,7 @@ function OnScriptRenderSettings(MainView) -- some default page to inform the use
 	Game.Ui:DoLabelScaled(MainView, "To implement a custom settings page, put a function 'OnScriptRenderSettings(x, y, w, h)' into your script.", 13.0, 0, -1, "OnScriptRenderSettings(x, y, w, h)")
 	MainView:HSplitTop(25.0, nil, MainView)
 	Game.Ui:DoLabelScaled(MainView, "To remove this default page, write 'OnScriptRenderSettings=nil' after 'Import(\"config\")'", 12.0, 0, -1, "OnScriptRenderSettings=nil")
-	
+
 	MainView:HSplitTop(45.0, nil, MainView)
 	Engine.TextRender:TextColor(0.8, 0.8, 0.8, 0.9)
 	Game.Ui:DoLabelScaled(MainView, "Note from the developer: Maybe this page will even be auto-generated one day, who knows... ;)", 9.0, 0, -1, "")
@@ -60,4 +61,9 @@ end
 
 function OnScriptSaveSettings() -- default save function
 	_ConfigSave()
+end
+
+function OnScriptUnload()
+    OnScriptSaveSettings()
+    print("config saved on script unload!")
 end
