@@ -2,6 +2,10 @@
 	#debug
 ]]--#
 
+local function printkv(k, v)
+    print(tostring(k),"=",tostring(v))
+end
+
 
 function locals()
     local variables = {}
@@ -16,14 +20,14 @@ function locals()
         idx = 1 + idx
     end
     print("----- LOCALS -----")
-    for k,v in next, variables do print(k,"=",v) end
+    for k,v in next, variables do printkv(k,v) end
     print("--- END LOCALS ---")
     return variables
 end
 
 function globals()
     print("----- GLOBALS -----")
-    for k,v in next, _G do print(k,"=",v) end
+    for k,v in next, _G do printkv(k,v) end
     print("--- END GLOBALS ---")
     return _G
 end
@@ -42,7 +46,7 @@ function upvalues()
         idx = 1 + idx
     end
     print("----- UPVALUES -----")
-    for k,v in next, variables do print(k,"=",v) end
+    for k,v in next, variables do printkv(k,v) end
     print("--- END UPVALUES ---")
 
     return variables
