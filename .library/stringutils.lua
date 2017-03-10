@@ -5,9 +5,9 @@ function _StringStartsWith(str, find)
 	if str:sub(1, find:len()) == find then return true else return false end
 end
 
-function _StringSplit(str, char)
-	if type(str) ~= "string" or type(char) ~= "string" then return "", "" end
-	local a, b = string.find(str, char)
+function _StringSplit(str, split)
+	if type(str) ~= "string" or type(split) ~= "string" then error("string expected, got " .. type(str)) end
+	local a, b = string.find(str, split, 1, true)
 	if (a == nil or b == nil) then return "","" end
 	return string.sub(str, 0, a-1), string.sub(str, b+1, -1)
 end
