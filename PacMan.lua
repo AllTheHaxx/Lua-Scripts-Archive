@@ -1,16 +1,15 @@
 g_ScriptTitle = "PacMan"
-g_ScriptInfo = "PacMan in Teewords? Yes here you go! Without enemys, but you get cakes. | By YoungFlyme\n\n\n...The cake is not a lie!"
+g_ScriptInfo = "PacMan in Teewords? Yes here you go! Without enemys, but you get cakes.\n\n\n...The cake is not a lie!"
 
--- Global variables
+-- global variables
 Cakes = {}
 CakePos = {}
 CakeMax = 10
 LastPos = Game.LocalTee.Pos
 LastTime = Game.Client.LocalTime
-CakeSize = 48 -- For faster changes!
+CakeSize = 48
 Collected = 0
 
---Important things
 Cake = 0
 function OnScriptInit()
 	CakePath = ScriptPath():sub(1, -ScriptPath():reverse():find("/")-1).."/data/cake.png"
@@ -31,10 +30,10 @@ function OnScriptUnload()
 end
 
 function OnTick()
-	if (#Cakes <= CakeMax) then -- Check if there are allready max cakes on the map, when not we will create the one.
+	if (#Cakes <= CakeMax) then -- check if there is already the max amount of cakes on the map, if not we will create the one
 		MakeCake()
 	end
-	if not (LastPos == Game.LocalTee.Pos) then -- Only check Collision if the player has moved
+	if not (LastPos == Game.LocalTee.Pos) then -- only check Collision if the player has moved
 		if (LastTime+0.01 <= Game.Client.LocalTime) then -- and a time delay has been exceeded, reduce lags for weak computer :)
 			LastTime = Game.Client.LocalTime
 			LastPos = Game.LocalTee.Pos
@@ -44,9 +43,9 @@ function OnTick()
 end
 
 function MakeCake()
-	local xx = math.random(0,Game.Collision.GetMapWidth*32) -- Create randomly positions for the new cake
+	local xx = math.random(0,Game.Collision.GetMapWidth*32) -- create random positions for the new cake
 	local yy = math.random(0,Game.Collision.GetMapHeight*32)
-	local tile = Game.Collision:GetTile(xx,yy) -- Check if the cake has a free area and dont overdraw a tile
+	local tile = Game.Collision:GetTile(xx,yy) -- don't overlap solid tiles
 	if (tile == 0) then
 		tile = Game.Collision:GetTile(xx+CakeSize,yy)
 		if (tile == 0) then
@@ -68,8 +67,8 @@ end
 
 function CheckCollision()
 	for i = 1, #Cakes do
-		local entfernung = Game.Collision:Distance(Game.LocalTee.Pos, CakePos[i]) -- Simple check but inaccurate
-		if entfernung < 28 + CakeSize/2 then
+		local distance = Game.Collision:Distance(Game.LocalTee.Pos, CakePos[i]) -- accurate enough
+		if distance < 28 + CakeSize/2 then
 			table.remove(Cakes,i)
 			table.remove(CakePos,i)
 			Collected = Collected+1
@@ -79,7 +78,7 @@ function CheckCollision()
 end
 
 function DrawCake()
-	Engine.Graphics:TextureSet(Cake) -- Draw all cakes
+	Engine.Graphics:TextureSet(Cake) -- draw all cakes
 	Engine.Graphics:QuadsBegin()
 		Engine.Graphics:SetColor(1,1,1,1)
 		Engine.Graphics:QuadsDraw(Cakes)
@@ -87,7 +86,7 @@ function DrawCake()
 end
 
 function DrawScore()
-	Engine.Graphics:MapScreen(0,0,Engine.Graphics.ScreenWidth,Engine.Graphics.ScreenHeight) -- Simple scrore screen.
+	Engine.Graphics:MapScreen(0,0,Engine.Graphics.ScreenWidth,Engine.Graphics.ScreenHeight) -- simple scrore screen
 	Engine.TextRender:Text(nil, 25+CakeSize, 200, 25.0, "Collected = " .. tostring(Collected), 0)
 	Engine.Graphics:TextureSet(Cake)
 	Engine.Graphics:QuadsBegin()
