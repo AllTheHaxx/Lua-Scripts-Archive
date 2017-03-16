@@ -13,7 +13,6 @@ MatrixText = {}
 Textes = {"0\n","1\n"}
 math.randomseed(Game.Client.Tick)
 Time = Game.Client.LocalTime
-Time2 = Game.Client.LocalTime
 
 function OnTick()
 	if Game.ServerInfo.Name == "" then
@@ -57,12 +56,12 @@ function RenderMatrix()
 				Engine.TextRender:Text(nil, MaxtrixStartPos[i].x, MaxtrixStartPos[i].y, 25.0, MatrixText[i], 0)
 			end
 		else -- one time create matrixes!
-			CreatMatrix()
+			CreateMatrix()
 		end
 	end
 end
 
-function CreatMatrix()
+function CreateMatrix()
 	if #Matrixes >= MaxMatrixes then return end	
 	for i=1, MaxMatrixes do
 		if (Matrixes[i] == nil) then
@@ -78,9 +77,6 @@ end
 function RenewMatrix(i)
 	MatrixSize[i]= math.random(1,Engine.Graphics.ScreenHeight*2/25)
 end
-
-
--- Feste y Pos. Start+Stop(Size)
 
 
 RegisterEvent("OnRenderLevel14","RenderMatrix")
