@@ -5,7 +5,8 @@ local BroadcastMessage = ""
 local BroadcastDur = 0
 local BroadcastTime = Game.Client.LocalTime
 local BroadcastOffset = 50
-local BroadcastTimer = true
+local BroadcastTimer = 0
+local BroadcastTimerWasSetted = false
 
 function BroadcastStart(text, time, timer)
 	if (Broadcast) then return end
@@ -15,12 +16,14 @@ function BroadcastStart(text, time, timer)
 		BroadcastMessage = text
 		BroadcastDur = time
 		BroadcastTimer = 0
+		BroadcastTimerWasSetted = false
 	else
 		BroadcastTime = Game.Client.LocalTime
 		Broadcast = true
 		BroadcastMessage = text
 		BroadcastDur = time
 		BroadcastTimer = timer
+		BroadcastTimerWasSetted = true
 	end
 end
 
@@ -34,16 +37,20 @@ function BroadcastReset()
 	end
 end
 
-local function BroadcastDraw()
-	if (Broadcast) then	
-		if (BroadcastTimer > 0 and BroadcastTime+BroadcastDur >= Game.Client.LocalTime) then
+function BroadcastDraw()
+	if (Broadcast) then
+		if (BroadcastTimerWasSetted and round(BroadcastTime-Game.Client.LocalTime+BroadcastTimer,0) > 0 and BroadcastTime+BroadcastDur >= Game.Client.LocalTime) then
 			Engine.Graphics:MapScreen(0,0,Engine.Graphics.ScreenWidth,Engine.Graphics.ScreenHeight) -- Simple broadcast screen.
 			Engine.TextRender:Text(nil, Engine.Graphics.ScreenWidth/2-((Engine.TextRender:TextWidth(nil,BroadcastOffset,BroadcastMessage,-1,-1))/2), 50, 50.0, BroadcastMessage.." (".. round(BroadcastTime-Game.Client.LocalTime+BroadcastTimer,0) ..")", 0)
-		elseif (BroadcastTime+BroadcastDur >= Game.Client.LocalTime) then
+			return true -- Return true for working with this.
+		elseif (BroadcastTimerWasSetted == false and BroadcastTime+BroadcastDur >= Game.Client.LocalTime) then
 			Engine.Graphics:MapScreen(0,0,Engine.Graphics.ScreenWidth,Engine.Graphics.ScreenHeight) -- Simple broadcast screen.
 			Engine.TextRender:Text(nil, Engine.Graphics.ScreenWidth/2-((Engine.TextRender:TextWidth(nil,BroadcastOffset,BroadcastMessage,-1,-1))/2), 50, 50.0, BroadcastMessage, 0)
+			return true
 		else
 			Broadcast = false
+			BroadcastReset()
+			return false
 		end
 	end
 end
