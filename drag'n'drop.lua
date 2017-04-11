@@ -4,8 +4,14 @@ g_ScriptInfo = "(c) 2017 The AllTheHaxx Team"
 
 Import("ui")
 
+DEADZONE = 10
+
+DRAG_INACTIVE=0
+DRAG_START=1
+DRAG_MOVING=2
+
 Rects = {}
-Dragging = false
+Dragging = DRAG_INACTIVE
 DragOffset = vec2f(0,0)
 
 function OnScriptInit()
@@ -30,7 +36,14 @@ function Render()
 	Engine.Graphics:MapScreen(Screen.x, Screen.y, Screen.w, Screen.h)
 
 	-- handle dragging (the currently dragged rect is always at the top)
-	if Dragging then
+	if Dragging == DRAG_START then
+		-- consider the deadzone
+		if Game.Collision:Distance(Game.Menus.MousePos, vec2f(Rects[#Rects].x, Rects[#Rects].y)+DragOffset) > DEADZONE then
+			Dragging = DRAG_MOVING
+			print("move", "left deadzone")
+		end
+	end
+	if Dragging == DRAG_MOVING then
 		Rects[#Rects].x = Game.Menus.MousePos.x/Game.Ui:Scale() - DragOffset.x
 		Rects[#Rects].y = Game.Menus.MousePos.y/Game.Ui:Scale() - DragOffset.y
 	end
@@ -73,18 +86,18 @@ function KeyPress(key)
 	if key == "mouse1" then
 		local Target = FindRectAtMouse()
 		if Target > 0 then
-			print("move", "found rect " .. Target)
+			print("drag", "found rect " .. Target)
 			-- bring it to the front
 			table.insert(Rects, Rects[Target])
 			table.remove(Rects, Target)
 			-- enter dragging mode
-			Dragging = true
+			Dragging = DRAG_START
 			DragOffset = Game.Menus.MousePos - vec2f(Rects[#Rects].x, Rects[#Rects].y)
 		end
 	elseif key == "mouse2" then
-		if Dragging then
+		if Dragging ~= DRAG_INACTIVE then
 			table.remove(Rects, #Rects)
-			Dragging = false
+			Dragging = DRAG_INACTIVE
 			print("remove", "dragged")
 		else
 			local ID = FindRectAtMouse()
@@ -99,8 +112,8 @@ function KeyPress(key)
 end
 
 function KeyRelease(key)
-	if key == "mouse1" and Dragging then
-		Dragging = false
+	if key == "mouse1" and Dragging ~= DRAG_INACTIVE then
+		Dragging = DRAG_INACTIVE
 		print("move", "dragging end")
 	end
 end
